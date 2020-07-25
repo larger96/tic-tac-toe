@@ -5,6 +5,8 @@ class Game
 
   @@turns = 0
   @@rounds = 1
+  @@player1_score = 0
+  @@player2_score = 0
 
   def initialize
     @tl = ' '
@@ -17,10 +19,14 @@ class Game
     @bm = ' '
     @br = ' '
     @x_o = 'X'
+    @game_won = false
   end
 
   def start
     puts "..::TIC_TAC_TOE::.."
+    puts "The first player to place three of their marks in a"
+    puts "horizontal, vertical or diagonal row is the winner!"
+    puts "\n"
     puts "Type your square to play!!"
     puts "----------------\n"
     puts "| tl | tm | tr |\n"
@@ -47,7 +53,14 @@ class Game
     puts "\s-------------\n"
     puts "\s| #{@bl} | #{@bm} | #{@br} |\n"
     puts "\s-------------\n"
-    play_game
+    if @game_won == true
+      puts "Player 1: #{@@player1_score}"
+      puts "Player 2: #{@@player2_score}"
+      new_game
+    else
+      print "#{whose_turn} make your move>> "
+      play_game
+    end
   end
 
   def x_o
@@ -68,7 +81,6 @@ class Game
   end
 
   def play_game
-    print "#{whose_turn} make your move>> "
     move = gets.chomp
     case move
     when 'tl'
@@ -89,14 +101,11 @@ class Game
       fill_square(@bm)
     when 'br'
       fill_square(@br)
-    when 'new'
-      new_game
-    when ''
-      game_over
     else
       puts "Please enter a valid input."
       @@turns -= 1
     end
+    winner
     board
   end
 
@@ -115,64 +124,46 @@ class Game
     result = gets.chomp
     if result == 'y'
       puts "\n"
-      @tl = ' '
-      @tm = ' '
-      @tr = ' '
-      @ml = ' '
-      @mm = ' '
-      @mr = ' '
-      @bl = ' '
-      @bm = ' '
-      @br = ' '
+      initialize
       @@turns = 0
       @@rounds += 1
       round_count
       board
     elsif result == 'n'
-      puts "Game resuming..."
-      @@turns -= 1
+      puts "Final Score"
+      puts "Player 1: #{@@player1_score}"
+      puts "Player 2: #{@@player2_score}"
+      puts "Thanks for playing!"
+      exit
     else
       puts "Input not recognised."
       new_game
     end
   end
 
-  def game_over
-    puts "You are about to end the game."
-    puts "Are you sure? (y/n)"
-    print ">> "
-    result = gets.chomp
-    if result == 'y'
-      puts "Thanks for playing!"
-      exit
-    elsif result == 'n'
-      puts "Game resuming..."
-      @@turns -= 1
-    else
-      puts "Input not recognised."
-      game_over
-    end
-  end
-
   def winner
-    if (tl = 'X' && tm = 'X' && tr = 'X') ||
-       (ml = 'X' && mm = 'X' && mr = 'X') ||
-       (bl = 'X' && bm = 'X' && br = 'X') ||
-       (tl = 'X' && ml = 'X' && bl = 'X') ||
-       (tm = 'X' && mm = 'X' && mr = 'X') ||
-       (tr = 'X' && mr = 'X' && br = 'X') ||
-       (tl = 'X' && mm = 'X' && br = 'X') ||
-       (bl = 'X' && mm = 'X' && tr = 'X')
+    if (tl == 'X' && tm == 'X' && tr == 'X') ||
+       (ml == 'X' && mm == 'X' && mr == 'X') ||
+       (bl == 'X' && bm == 'X' && br == 'X') ||
+       (tl == 'X' && ml == 'X' && bl == 'X') ||
+       (tm == 'X' && mm == 'X' && mr == 'X') ||
+       (tr == 'X' && mr == 'X' && br == 'X') ||
+       (tl == 'X' && mm == 'X' && br == 'X') ||
+       (bl == 'X' && mm == 'X' && tr == 'X')
       puts 'Player 1 wins!'
-    elsif (tl = 'O' && tm = 'O' && tr = 'O') ||
-      (ml = 'O' && mm = 'O' && mr = 'O') ||
-      (bl = 'O' && bm = 'O' && br = 'O') ||
-      (tl = 'O' && ml = 'O' && bl = 'O') ||
-      (tm = 'O' && mm = 'O' && mr = 'O') ||
-      (tr = 'O' && mr = 'O' && br = 'O') ||
-      (tl = 'O' && mm = 'O' && br = 'O') ||
-      (bl = 'O' && mm = 'O' && tr = 'O')
+      @@player1_score += 1
+      @game_won = true
+    elsif (tl == 'O' && tm == 'O' && tr == 'O') ||
+       (ml == 'O' && mm == 'O' && mr == 'O') ||
+       (bl == 'O' && bm == 'O' && br == 'O') ||
+       (tl == 'O' && ml == 'O' && bl == 'O') ||
+       (tm == 'O' && mm == 'O' && mr == 'O') ||
+       (tr == 'O' && mr == 'O' && br == 'O') ||
+       (tl == 'O' && mm == 'O' && br == 'O') ||
+       (bl == 'O' && mm == 'O' && tr == 'O')
       puts 'Player 2 wins!'
+      @@player2_score += 1
+      @game_won = true
     else
       puts "\n"
     end
